@@ -1,5 +1,9 @@
 # Go Sysdig Client Library 
 
+
+[![Build Status](https://travis-ci.org/NeowayLabs/gootstrap.svg?branch=master)](https://travis-ci.org/NeowayLabs/sysdig-client)
+[![Go Report Card](https://goreportcard.com/badge/github.com/NeowayLabs/sysdig-client)](https://goreportcard.com/report/github.com/NeowayLabs/sysdig-client)
+
 A high level Go client library for Sysdig resources like:
 
  * GetSumMetric

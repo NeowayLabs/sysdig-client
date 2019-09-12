@@ -1,0 +1,23 @@
+os:
+  - linux
+
+sudo: required
+
+services:
+  - docker
+
+language: go
+
+go:
+  - "tip"
+  - "1.12"
+
+script:
+  - ./hack/check.sh
+
+notifications:
+  email:
+    - maykon.oliveira@neoway.com.br
+    - matheus.vill@neoway.com.br
+    - kamila.hinckel@neoway.com.br
+    - leonardo.borges@neoway.com.br

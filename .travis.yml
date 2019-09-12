@@ -13,6 +13,7 @@ go:
   - "1.12"
 
 script:
+  - ./hack/vendor.sh
   - ./hack/check.sh
   - ./hack/coverage.sh
 

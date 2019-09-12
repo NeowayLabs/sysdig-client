@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/NeowayLabs/sysdigcli/client"
+	"github.com/NeowayLabs/sysdig-client/client"
 )
 
 func TestDoRequestExecuteReturnCorrectly(t *testing.T) {
@@ -26,11 +26,13 @@ func TestDoRequestExecuteReturnCorrectly(t *testing.T) {
 			}
 		}))
 
-		c := client.Client{}
+		c := client.Client{
+			URL: server.URL,
+		}
 		actual := c.DoRequest(
 			client.Request{
 				Method: m,
-				URL:    server.URL,
+				URI:    "/teste",
 				Body:   body,
 			},
 		)
@@ -55,11 +57,13 @@ func TestDoRequestExecuteReturnsError(t *testing.T) {
 			}
 		}))
 
-		c := client.Client{}
+		c := client.Client{
+			URL: server.URL,
+		}
 		actual := c.DoRequest(
 			client.Request{
 				Method: m,
-				URL:    server.URL,
+				URI:    "/teste",
 				Body:   nil,
 			},
 		)

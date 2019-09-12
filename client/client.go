@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
@@ -12,12 +13,12 @@ import (
 const RequestTimeoutSeconds = 360
 
 type Client struct {
-	Authorization string
+	URL string
 }
 
 type Request struct {
 	Method string
-	URL    string
+	URI    string
 	Body   json.RawMessage
 }
 
@@ -33,7 +34,7 @@ func (c *Client) DoRequest(r Request) Response {
 	response := Response{}
 
 	b, _ := json.Marshal(r.Body)
-	req, err := http.NewRequest(r.Method, r.URL, bytes.NewBuffer(b))
+	req, err := http.NewRequest(r.Method, c.URL+r.URI, bytes.NewBuffer(b))
 	if err != nil {
 		response.Error = err
 		return response
@@ -42,7 +43,7 @@ func (c *Client) DoRequest(r Request) Response {
 	timeout := time.Duration(time.Duration(RequestTimeoutSeconds) * time.Second)
 	client := &http.Client{Timeout: timeout}
 
-	req.Header.Set("Authorization", c.Authorization)
+	req.Header.Set("Authorization", os.Getenv("SYSDIG_CLOUD_API_TOKEN"))
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {

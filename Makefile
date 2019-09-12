@@ -2,7 +2,7 @@ version     ?= latest
 log          = 'error'
 devimg       = sysdigclidev
 GOPATH      ?= $(HOME)/go
-packagename  = github.com/NeowayLabs/sysdigcli
+packagename  = github.com/NeowayLabs/sysdig-client
 workdir      = /go/src/$(packagename)
 rundev       = docker run --net=host -e SEVERINO_LOGGER=$(log) --rm -v `pwd`:$(workdir) --workdir $(workdir) $(devimg)
 runbuild     = --rm -v `pwd`:$(workdir) -w $(workdir) $(devimg)
@@ -32,6 +32,9 @@ vendor: imagedev
 analyze: imagedev
 	docker run --rm -v `pwd`:$(workdir) --workdir $(workdir) $(devimg) ./hack/analyze.sh
 
+
+check: imagedev
+	$(rundev) ./hack/check.sh $(pkg) $(test)
 
 check-integration: imagedev
 	$(rundev) ./hack/check-integration.sh $(pkg) $(test)

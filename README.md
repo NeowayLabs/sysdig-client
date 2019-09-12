@@ -7,7 +7,7 @@ A high level Go client library for Sysdig resources like:
 
 ## Installation
 
-`go get -u github.com/NeowayLabs/sysdigcli`
+`go get -u github.com/NeowayLabs/sysdig-client`
 
 ## Quick Start
 
@@ -15,26 +15,26 @@ A high level Go client library for Sysdig resources like:
 package main
 
 
-import "github.com/NeowayLabs/sysdigcli"
+import sysdigclient "github.com/NeowayLabs/sysdig-client"
 
 
 func main() {
 	filter := "agent.tag.team = \"datapirates\" and bot.name = \"rf-pf-input\""
     
-    	metrics := []sysdigcli.Metric{
+    	metrics := []sysdigclient.Metric{
     		{
     			Id: "bot.result.status.2xx.total",
-    			Aggregations: sysdigcli.Aggregation{
+    			Aggregations: sysdigclient.Aggregation{
     				Time: "sum",
     				Group: "sum",
     			},
     		},
     	}
-    	period := sysdigcli.Period{
+    	period := sysdigclient.Period{
     		Days: 30,
     	}
     
-    	s := sysdigcli.New("Bearer token_here")
+    	s := sysdigclient.New("Bearer token_here")
     	
     	sumMetric, err := s.GetSumMetric(metrics, filter, period)
 }
@@ -42,11 +42,12 @@ func main() {
 
 To see more examples, [check integration test file](sysdigcli_integration_test.go)
 
+
 ## Running tests
 
-Integration tests (to execute the test you need put your token in the `setup` of `sysdigcli_integration_test.go`):
+Example:
 
-    make check-integration
+    make check
     
 
 ## Analyze code

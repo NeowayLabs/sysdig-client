@@ -1,12 +1,12 @@
-package sysdigcli
+package sysdig_client
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/NeowayLabs/sysdigcli/client"
+	"github.com/NeowayLabs/sysdig-client/client"
 )
 
-type Sysdigcli struct {
+type Sysdigclient struct {
 	client client.Client
 }
 
@@ -42,7 +42,7 @@ type Data struct {
 	Value []int `json:"d"`
 }
 
-func (s *Sysdigcli) GetSumMetric(metrics []Metric, filter string, period Period) (int, error) {
+func (s *Sysdigclient) GetSumMetric(metrics []Metric, filter string, period Period) (int, error) {
 
 	secondsPeriod, err := s.getPeriodInSeconds(period)
 
@@ -65,7 +65,7 @@ func (s *Sysdigcli) GetSumMetric(metrics []Metric, filter string, period Period)
 	response := s.client.DoRequest(
 		client.Request{
 			Method: "POST",
-			URL:    "https://app.sysdigcloud.com/api/data",
+			URI:    "/api/data",
 			Body:   bodyValue,
 		},
 	)
@@ -80,7 +80,7 @@ func (s *Sysdigcli) GetSumMetric(metrics []Metric, filter string, period Period)
 	return result.Data[0].Value[0], nil
 }
 
-func (s *Sysdigcli) getPeriodInSeconds(period Period) (int, error) {
+func (s *Sysdigclient) getPeriodInSeconds(period Period) (int, error) {
 	if period.Days > 0 {
 		return period.Days * 24 * 60 * 60, nil
 	} else if period.Hours > 0 {
@@ -92,10 +92,18 @@ func (s *Sysdigcli) getPeriodInSeconds(period Period) (int, error) {
 	}
 }
 
-func New(token string) *Sysdigcli {
-	return &Sysdigcli{
+func New() *Sysdigclient {
+	return &Sysdigclient{
 		client: client.Client{
-			Authorization: token,
+			URL: "https://app.sysdigcloud.com",
+		},
+	}
+}
+
+func NewWithUrl(url string) *Sysdigclient {
+	return &Sysdigclient{
+		client: client.Client{
+			URL: url,
 		},
 	}
 }

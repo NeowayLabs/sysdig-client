@@ -23,7 +23,7 @@ import sysdigclient "github.com/NeowayLabs/sysdig-client"
 
 
 func main() {
-	filter := "agent.tag.team = \"datapirates\" and bot.name = \"rf-pf-input\""
+	filter := "agent.tag.team = \"datapirates\" and bot.name = \"abi\""
     
     	metrics := []sysdigclient.Metric{
     		{

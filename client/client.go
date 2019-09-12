@@ -11,9 +11,11 @@ import (
 )
 
 const RequestTimeoutSeconds = 360
+const timeout = time.Duration(time.Duration(RequestTimeoutSeconds) * time.Second)
 
 type Client struct {
-	URL string
+	URL        string
+	HttpClient http.Client
 }
 
 type Request struct {
@@ -40,12 +42,9 @@ func (c *Client) DoRequest(r Request) Response {
 		return response
 	}
 
-	timeout := time.Duration(time.Duration(RequestTimeoutSeconds) * time.Second)
-	client := &http.Client{Timeout: timeout}
-
 	req.Header.Set("Authorization", os.Getenv("SYSDIG_CLOUD_API_TOKEN"))
 	req.Header.Set("Content-Type", "application/json")
-	resp, err := client.Do(req)
+	resp, err := c.HttpClient.Do(req)
 	if err != nil {
 		response.Error = err
 		return response
@@ -73,4 +72,11 @@ func (c *Client) DoRequest(r Request) Response {
 	response.Error = err
 
 	return response
+}
+
+func New(url string) *Client {
+	return &Client{
+		URL:        url,
+		HttpClient: http.Client{Timeout: timeout},
+	}
 }

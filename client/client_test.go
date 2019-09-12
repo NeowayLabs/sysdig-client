@@ -26,9 +26,8 @@ func TestDoRequestExecuteReturnCorrectly(t *testing.T) {
 			}
 		}))
 
-		c := client.Client{
-			URL: server.URL,
-		}
+		c := client.New(server.URL)
+
 		actual := c.DoRequest(
 			client.Request{
 				Method: m,
@@ -57,9 +56,7 @@ func TestDoRequestExecuteReturnsError(t *testing.T) {
 			}
 		}))
 
-		c := client.Client{
-			URL: server.URL,
-		}
+		c := client.New(server.URL)
 		actual := c.DoRequest(
 			client.Request{
 				Method: m,

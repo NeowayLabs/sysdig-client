@@ -10,9 +10,11 @@ language: go
 
 go:
   - "tip"
-  - "1.12"
+  - "1.13"
 
 script:
+  - go get -u github.com/golang/dep/cmd/dep
+  - go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
   - ./hack/vendor.sh
   - ./hack/check.sh
   - ./hack/coverage.sh

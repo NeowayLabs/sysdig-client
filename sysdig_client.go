@@ -77,6 +77,10 @@ func (s *Sysdigclient) GetSumMetric(metrics []Metric, filter string, period Peri
 		return 0, fmt.Errorf("error on unmarshal response result: %s", err)
 	}
 
+	if len(result.Data) == 0 {
+		return 0, fmt.Errorf("api returned the blank data field")
+	}
+
 	return result.Data[0].Value[0], nil
 }
 

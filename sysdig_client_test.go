@@ -135,3 +135,26 @@ func TestGetSumMetricUnmarshalResponseError(t *testing.T) {
 	assert.EqualError(t, err, "error on unmarshal response result: json: cannot unmarshal array into Go value of type sysdig_client.ApiResult", "Error should be equal!")
 	assert.Equal(t, sumMetric, 0, "Sum metric must be zero!")
 }
+
+func TestGetSumMetricBlankDataResponseError(t *testing.T) {
+
+	filter, metrics, period := getSumMetricConfiguration()
+	period.Minutes = 10
+
+	result := getSumMetricResponseRecord()
+	delete(result, "data")
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI == "/api/data" {
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(result)
+		}
+	}))
+	defer ts.Close()
+
+	s := sysdigclient.NewWithUrl(ts.URL)
+	sumMetric, err := s.GetSumMetric(metrics, filter, period)
+
+	assert.EqualError(t, err, "api returned the blank data field", "Error should be equal!")
+	assert.Equal(t, sumMetric, 0, "Sum metric must be zero!")
+}

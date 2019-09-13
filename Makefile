@@ -1,12 +1,11 @@
 version     ?= latest
-log          = 'error'
 devimg       = sysdigclidev
 GOPATH      ?= $(HOME)/go
 wd=$(shell pwd)
 modcachedir=$(wd)/.gomodcachedir
 packagename  = github.com/NeowayLabs/sysdig-client
 workdir      = /go/src/$(packagename)
-rundev       = docker run --net=host -e SEVERINO_LOGGER=$(log) --rm -v `pwd`:$(workdir) --workdir $(workdir) $(devimg)
+rundev       = docker run --net=host --rm -v `pwd`:$(workdir) --workdir $(workdir) $(devimg)
 runbuild     = --rm -v `pwd`:$(workdir) -w $(workdir) $(devimg)
 gitversion   = $(version)
 

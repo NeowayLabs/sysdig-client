@@ -14,6 +14,7 @@ go:
 
 script:
   - ./hack/coverage.sh
+  - ./hack/analyze.sh
 
 notifications:
   email:
@@ -21,3 +22,5 @@ notifications:
     - matheus.vill@neoway.com.br
     - kamila.hinckel@neoway.com.br
     - leonardo.borges@neoway.com.br
+    - juliano.galgaro@neoway.com.br
+    - daniel.melo@neoway.com.br

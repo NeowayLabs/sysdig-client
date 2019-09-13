@@ -13,7 +13,8 @@ go:
   - "1.13"
 
 script:
-  - make coverage
+  - make check
+  - make check-integration
   - make analyze
 
 notifications:

@@ -42,20 +42,24 @@ func getSumMetricResponseRecord() map[string]interface{} {
 	}
 }
 
-func TestGetSumMetricWithDaysPeriod(t *testing.T) {
-
-	filter, metrics, period := getSumMetricConfiguration()
-	period.Days = 30
-
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func getSuccessHttpHandler() *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.RequestURI == "/api/data" {
 			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(getSumMetricResponseRecord())
 		}
 	}))
+}
+
+func TestGetSumMetricWithDaysPeriod(t *testing.T) {
+
+	filter, metrics, period := getSumMetricConfiguration()
+	period.Days = 30
+
+	ts := getSuccessHttpHandler()
 	defer ts.Close()
 
-	s := sysdigclient.NewWithUrl(ts.URL)
+	s := sysdigclient.NewWithEndpoint(ts.URL)
 	sumMetric, err := s.GetSumMetric(metrics, filter, period)
 
 	assert.Nil(t, err)
@@ -67,15 +71,10 @@ func TestGetSumMetricWithHourPeriod(t *testing.T) {
 	filter, metrics, period := getSumMetricConfiguration()
 	period.Hours = 3
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.RequestURI == "/api/data" {
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(getSumMetricResponseRecord())
-		}
-	}))
+	ts := getSuccessHttpHandler()
 	defer ts.Close()
 
-	s := sysdigclient.NewWithUrl(ts.URL)
+	s := sysdigclient.NewWithEndpoint(ts.URL)
 	sumMetric, err := s.GetSumMetric(metrics, filter, period)
 
 	assert.Nil(t, err)
@@ -87,15 +86,10 @@ func TestGetSumMetricWithMinutesPeriod(t *testing.T) {
 	filter, metrics, period := getSumMetricConfiguration()
 	period.Minutes = 10
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.RequestURI == "/api/data" {
-			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(getSumMetricResponseRecord())
-		}
-	}))
+	ts := getSuccessHttpHandler()
 	defer ts.Close()
 
-	s := sysdigclient.NewWithUrl(ts.URL)
+	s := sysdigclient.NewWithEndpoint(ts.URL)
 	sumMetric, err := s.GetSumMetric(metrics, filter, period)
 
 	assert.Nil(t, err)
@@ -129,7 +123,7 @@ func TestGetSumMetricUnmarshalResponseError(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	s := sysdigclient.NewWithUrl(ts.URL)
+	s := sysdigclient.NewWithEndpoint(ts.URL)
 	sumMetric, err := s.GetSumMetric(metrics, filter, period)
 
 	assert.EqualError(t, err, "error on unmarshal response result: json: cannot unmarshal array into Go value of type sysdig_client.ApiResult", "Error should be equal!")
@@ -152,7 +146,7 @@ func TestGetSumMetricBlankDataResponseError(t *testing.T) {
 	}))
 	defer ts.Close()
 
-	s := sysdigclient.NewWithUrl(ts.URL)
+	s := sysdigclient.NewWithEndpoint(ts.URL)
 	sumMetric, err := s.GetSumMetric(metrics, filter, period)
 
 	assert.EqualError(t, err, "api returned the blank data field", "Error should be equal!")

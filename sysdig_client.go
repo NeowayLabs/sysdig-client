@@ -2,6 +2,7 @@ package sysdig_client
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/NeowayLabs/sysdig-client/client"
 )
@@ -47,7 +48,7 @@ func (s *Sysdigclient) GetSumMetric(metrics []Metric, filter string, period Peri
 	secondsPeriod, err := s.getPeriodInSeconds(period)
 
 	if err != nil {
-		return 0, fmt.Errorf("error on give a period in seconds: %s", err)
+		return 0, fmt.Errorf("error on give a period in seconds: %w", err)
 	}
 
 	query := Query{
@@ -59,7 +60,7 @@ func (s *Sysdigclient) GetSumMetric(metrics []Metric, filter string, period Peri
 	bodyValue, err := json.Marshal(query)
 
 	if err != nil {
-		return 0, fmt.Errorf("error on marshal query: %s", err)
+		return 0, fmt.Errorf("error on marshal query: %w", err)
 	}
 
 	response := s.client.DoRequest(
@@ -70,15 +71,19 @@ func (s *Sysdigclient) GetSumMetric(metrics []Metric, filter string, period Peri
 		},
 	)
 
+	if response.Error != nil {
+		return 0, response.Error
+	}
+
 	var result ApiResult
 	err = json.Unmarshal(response.Body, &result)
 
 	if err != nil {
-		return 0, fmt.Errorf("error on unmarshal response result: %s", err)
+		return 0, fmt.Errorf("error on unmarshal response result: %w", err)
 	}
 
 	if len(result.Data) == 0 {
-		return 0, fmt.Errorf("api returned the blank data field")
+		return 0, errors.New("api returned the blank data field")
 	}
 
 	return result.Data[0].Value[0], nil
@@ -99,15 +104,15 @@ func (s *Sysdigclient) getPeriodInSeconds(period Period) (int, error) {
 func New() *Sysdigclient {
 	return &Sysdigclient{
 		client: client.Client{
-			URL: "https://app.sysdigcloud.com",
+			Endpoint: "https://app.sysdigcloud.com",
 		},
 	}
 }
 
-func NewWithUrl(url string) *Sysdigclient {
+func NewWithEndpoint(endpoint string) *Sysdigclient {
 	return &Sysdigclient{
 		client: client.Client{
-			URL: url,
+			Endpoint: endpoint,
 		},
 	}
 }

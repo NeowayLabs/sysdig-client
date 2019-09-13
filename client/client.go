@@ -3,6 +3,8 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -11,10 +13,10 @@ import (
 )
 
 const RequestTimeoutSeconds = 360
-const timeout = time.Duration(time.Duration(RequestTimeoutSeconds) * time.Second)
+const timeout = time.Duration(RequestTimeoutSeconds) * time.Second
 
 type Client struct {
-	URL        string
+	Endpoint   string
 	HttpClient http.Client
 }
 
@@ -35,14 +37,21 @@ type Response struct {
 func (c *Client) DoRequest(r Request) Response {
 	response := Response{}
 
-	b, _ := json.Marshal(r.Body)
-	req, err := http.NewRequest(r.Method, c.URL+r.URI, bytes.NewBuffer(b))
+	b, err := json.Marshal(r.Body)
+
 	if err != nil {
 		response.Error = err
 		return response
 	}
 
-	req.Header.Set("Authorization", os.Getenv("SYSDIG_CLOUD_API_TOKEN"))
+	req, err := http.NewRequest(r.Method, c.Endpoint+r.URI, bytes.NewBuffer(b))
+	if err != nil {
+		response.Error = err
+		return response
+	}
+
+	authorization := fmt.Sprintf("Bearer %s", os.Getenv("SYSDIG_CLOUD_API_TOKEN"))
+	req.Header.Set("Authorization", authorization)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := c.HttpClient.Do(req)
 	if err != nil {
@@ -50,6 +59,12 @@ func (c *Client) DoRequest(r Request) Response {
 		return response
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusUnauthorized {
+		response.Status = http.StatusUnauthorized
+		response.Error = errors.New("invalid access token, please enter correct key in environment variable SYSDIG_CLOUD_API_TOKEN")
+		return response
+	}
 
 	msg, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -74,9 +89,9 @@ func (c *Client) DoRequest(r Request) Response {
 	return response
 }
 
-func New(url string) *Client {
+func New(endpoint string) *Client {
 	return &Client{
-		URL:        url,
+		Endpoint:   endpoint,
 		HttpClient: http.Client{Timeout: timeout},
 	}
 }

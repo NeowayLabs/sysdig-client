@@ -41,7 +41,7 @@ check: imagedev
 check-integration: imagedev
 	$(rundev) ./hack/check-integration.sh $(pkg) $(test)
 
-check-all: analyze coverage
+check-all: analyze check-integration check
 
 coverage: imagedev
 	$(rundev) ./hack/coverage.sh

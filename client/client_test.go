@@ -4,6 +4,7 @@ package client_test
 
 import (
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -73,6 +74,29 @@ func TestDoRequestExecuteReturnsError(t *testing.T) {
 		}
 
 		assertResponse(actual, expected, t)
+	}
+}
+
+func TestDoRequestExecuteReturnsErrorWhenUnauthorized(t *testing.T) {
+	methods := []string{"GET", "POST"}
+	for _, m := range methods {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.Method == m {
+				w.WriteHeader(http.StatusUnauthorized)
+			}
+		}))
+
+		c := client.New(server.URL)
+		actual := c.DoRequest(
+			client.Request{
+				Method: m,
+				URI:    "/teste",
+				Body:   nil,
+			},
+		)
+
+		assert.Error(t, actual.Error, "invalid access token, please enter correct key in environment variable SYSDIG_CLOUD_API_TOKEN")
+		assert.Equal(t, actual.Status, http.StatusUnauthorized)
 	}
 }
 

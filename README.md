@@ -7,7 +7,14 @@
 A high level Go client library for Sysdig resources like:
 
  * GetSumMetric
+ 
 
+More details about the official sysdig API can be found [here](https://sysdig.gitbooks.io/sysdig-cloud-api/content/rest_api/data.html)
+
+
+## Prerequisite
+
+To use this lib you need set your sysdig API token in the var env `SYSDIG_CLOUD_API_TOKEN`. You can find your token [here](https://app.sysdigcloud.com/#/settings/user)
 
 ## Installation
 

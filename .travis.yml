@@ -13,8 +13,8 @@ go:
   - "1.13"
 
 script:
-  - ./hack/coverage.sh
-  - ./hack/analyze.sh
+  - make coverage
+  - make analyze
 
 notifications:
   email:

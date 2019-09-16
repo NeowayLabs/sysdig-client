@@ -50,7 +50,7 @@ func (c *Client) DoRequest(r Request) Response {
 		return response
 	}
 
-	authorization := fmt.Sprintf(os.Getenv("SYSDIG_CLOUD_API_TOKEN"))
+	authorization := fmt.Sprint(os.Getenv("SYSDIG_CLOUD_API_TOKEN"))
 	req.Header.Set("Authorization", authorization)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := c.HttpClient.Do(req)

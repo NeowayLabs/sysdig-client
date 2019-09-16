@@ -2,7 +2,6 @@ package sysdig_client
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/NeowayLabs/sysdig-client/client"
 )
@@ -83,7 +82,7 @@ func (s *Sysdigclient) GetSumMetric(metrics []Metric, filter string, period Peri
 	}
 
 	if len(result.Data) == 0 {
-		return 0, errors.New("api returned the blank data field")
+		return 0, nil
 	}
 
 	return result.Data[0].Value[0], nil

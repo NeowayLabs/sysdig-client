@@ -149,6 +149,6 @@ func TestGetSumMetricBlankDataResponseError(t *testing.T) {
 	s := sysdigclient.NewWithEndpoint(ts.URL)
 	sumMetric, err := s.GetSumMetric(metrics, filter, period)
 
-	assert.EqualError(t, err, "api returned the blank data field", "Error should be equal!")
+	assert.Nil(t, err)
 	assert.Equal(t, sumMetric, 0, "Sum metric must be zero!")
 }

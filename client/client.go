@@ -50,7 +50,7 @@ func (c *Client) DoRequest(r Request) Response {
 		return response
 	}
 
-	authorization := fmt.Sprintf("Bearer %s", os.Getenv("SYSDIG_CLOUD_API_TOKEN"))
+	authorization := fmt.Sprintf(os.Getenv("SYSDIG_CLOUD_API_TOKEN"))
 	req.Header.Set("Authorization", authorization)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := c.HttpClient.Do(req)
@@ -62,7 +62,7 @@ func (c *Client) DoRequest(r Request) Response {
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		response.Status = http.StatusUnauthorized
-		response.Error = errors.New("invalid access token, please enter correct key in environment variable SYSDIG_CLOUD_API_TOKEN")
+		response.Error = errors.New("Unauthorized access token, please enter correct key in environment variable SYSDIG_CLOUD_API_TOKEN")
 		return response
 	}
 

@@ -1,0 +1,27 @@
+os:
+  - linux
+
+sudo: required
+
+services:
+  - docker
+
+language: go
+
+go:
+  - "tip"
+  - "1.13"
+
+script:
+  - make check
+  - make check-integration
+  - make analyze
+
+notifications:
+  email:
+    - maykon.oliveira@neoway.com.br
+    - matheus.vill@neoway.com.br
+    - kamila.hinckel@neoway.com.br
+    - leonardo.borges@neoway.com.br
+    - juliano.galgaro@neoway.com.br
+    - daniel.melo@neoway.com.br

@@ -100,6 +100,57 @@ func TestDoRequestExecuteReturnsErrorWhenUnauthorized(t *testing.T) {
 	}
 }
 
+func TestDoRequestExecuteReturnsErrorWhenBadRequestCredentials(t *testing.T) {
+	result := map[string]interface{}{
+		"timestamp": 1570537792986,
+		"status":    400,
+		"error":     "Bad Request",
+		"message":   "Following header must be provided: X-Sysdig-Product",
+		"path":      "/api/data",
+	}
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI == "/teste" {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(result)
+		}
+	}))
+	defer ts.Close()
+
+	c := client.New(ts.URL)
+	actual := c.DoRequest(
+		client.Request{
+			Method: "POST",
+			URI:    "/teste",
+			Body:   nil,
+		},
+	)
+
+	assert.EqualError(t, actual.Error, "please set the variable SYSDIG_CLOUD_API_TOKEN with the token with the pattern `Bearer your_token`")
+	assert.Equal(t, http.StatusUnauthorized, actual.Status)
+}
+
+func TestDoRequestExecuteReturnsErrorWhenBadRequestCredentialsAndUnmarshalError(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI == "/teste" {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(2)
+		}
+	}))
+	defer ts.Close()
+
+	c := client.New(ts.URL)
+	actual := c.DoRequest(
+		client.Request{
+			Method: "POST",
+			URI:    "/teste",
+			Body:   nil,
+		},
+	)
+
+	assert.EqualError(t, actual.Error, "error on unmarshal response body")
+}
+
 func assertResponse(actual, expected client.Response, t *testing.T) {
 	if actual.Status != expected.Status {
 		t.Fatal("Status should be equal! Actual: ", actual.Status, "Expected: ", expected.Status)

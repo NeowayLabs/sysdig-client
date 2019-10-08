@@ -62,8 +62,24 @@ func (c *Client) DoRequest(r Request) Response {
 
 	if resp.StatusCode == http.StatusUnauthorized {
 		response.Status = http.StatusUnauthorized
-		response.Error = errors.New("Unauthorized access token, please enter correct key in environment variable SYSDIG_CLOUD_API_TOKEN")
+		response.Error = errors.New("unauthorized access token, please enter correct key in environment variable SYSDIG_CLOUD_API_TOKEN")
 		return response
+	} else if resp.StatusCode == http.StatusBadRequest {
+
+		jsonValue := make(map[string]interface{})
+
+		err = json.NewDecoder(resp.Body).Decode(&jsonValue)
+
+		if err != nil {
+			response.Error = errors.New("error on unmarshal response body")
+			return response
+		}
+
+		if jsonValue["message"] == "Following header must be provided: X-Sysdig-Product" {
+			response.Status = http.StatusUnauthorized
+			response.Error = errors.New("please set the variable SYSDIG_CLOUD_API_TOKEN with the token with the pattern `Bearer your_token`")
+			return response
+		}
 	}
 
 	msg, err := ioutil.ReadAll(resp.Body)

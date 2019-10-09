@@ -45,7 +45,7 @@ func main() {
     		Days: 30,
     	}
     
-    	s := sysdigclient.New("Bearer token_here")
+    	s := sysdigclient.New()
     	
     	sumMetric, err := s.GetSumMetric(metrics, filter, period)
 }

@@ -152,3 +152,31 @@ func TestGetSumMetricBlankDataResponseError(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, sumMetric, 0, "Sum metric must be zero!")
 }
+
+func TestGetSumMetricWithBadRequestResponse(t *testing.T) {
+
+	filter, metrics, period := getSumMetricConfiguration()
+	period.Minutes = 10
+
+	result := map[string]interface{}{
+		"timestamp": 1570537792986,
+		"status":    400,
+		"error":     "Bad Request",
+		"message":   "Following header must be provided: X-Sysdig-Product",
+		"path":      "/api/data",
+	}
+
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.RequestURI == "/api/data" {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(result)
+		}
+	}))
+	defer ts.Close()
+
+	s := sysdigclient.NewWithEndpoint(ts.URL)
+	sumMetric, err := s.GetSumMetric(metrics, filter, period)
+
+	assert.EqualError(t, err, "please set the variable SYSDIG_CLOUD_API_TOKEN with the token with the pattern `Bearer your_token`")
+	assert.Equal(t, sumMetric, 0, "Sum metric must be zero!")
+}
